@@ -1,0 +1,37 @@
+from bs4 import BeautifulSoup
+from requests import get
+import os   
+from win32com.client import Dispatch
+
+def weather():
+    message = ""
+    url = 'https://www.wunderground.com/weather/us/oh/youngstown'
+    response = get(url)
+
+
+    soup = BeautifulSoup(response.text, 'html.parser')
+    weather_hi = soup.find(class_ = 'hi')
+    message += f"The high for today's weather is {weather_hi.text}\n"
+
+
+    weather_lo = soup.find(class_ = 'lo')
+    message += f"The low for today's weather is {weather_lo.text}\n"
+
+    rain = soup.find(class_ = "wu-unit-rain")
+    message += f"There are {rain.text} of rain expected for today.\n"
+
+    snow = soup.find(class_ = 'wu-unit-snow')
+    message += f"There will be {snow.text} of snow expected for today.\n"
+    return message
+print(weather())
+
+#Email Code
+
+outlook = Dispatch('outlook.application')
+mail = outlook.Createitem(0)
+
+mail.Subject = 'Email Test'
+mail.To = "michael.sekol@mahoningctc.com"
+
+mail.Body = weather()
+mail.Send()  
